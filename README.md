@@ -243,11 +243,11 @@ Tùy vào môi trường cài đặt của bạn, chạy một trong các cách 
 
 ---
 
-## 🤖 5. Hướng Dẫn Cấu Hình X (Twitter) Chatbot Gửi Tin Nhắn Báo Cáo Deploy (Thành Công / Thất Bại)
+## 🤖 5. Hướng Dẫn Cấu Hình Telegram Chatbot Báo Cáo Kết Quả Deploy (Khuyên Dùng - Hoàn Toàn Miễn Phí)
 
-Hệ thống CI/CD (cả **GitHub Actions** và **Jenkins**) đã được cấu hình tích hợp Chatbot X (Twitter) Direct Message để tự động gửi tin nhắn báo cáo chi tiết **TOÀN BỘ THÔNG TIN** đến tài khoản X của bạn ngay sau khi tiến trình Deploy hoàn tất:
+Hệ thống CI/CD (cả **GitHub Actions** và **Jenkins**) được tích hợp Chatbot Telegram báo cáo chi tiết **TOÀN BỘ THÔNG TIN** đến điện thoại/máy tính của bạn ngay sau khi tiến trình Deploy hoàn tất:
 
-### 📋 Mẫu báo cáo tin nhắn X (Twitter) gửi về:
+### 📋 Mẫu tin nhắn Telegram Chatbot gửi về:
 - 🟢 **Khi THÀNH CÔNG**:
   ```text
   🚀 [CI/CD DEPLOYMENT REPORT]
@@ -256,38 +256,60 @@ Hệ thống CI/CD (cả **GitHub Actions** và **Jenkins**) đã được cấu
   📌 Dự án: Next.js App
   🌿 Nhánh: main
   👤 Tác giả: HieuNguyenddev
-  🌐 Vercel URL: https://devops-minhhieu-st-23-a.vercel.app
-  🐙 Repository: https://github.com/HieuNguyenddev/devops-minhhieu-ST23A
-  ```
-
-- 🔴 **Khi THẤT BẠI**:
-  ```text
-  ❌ [CI/CD DEPLOYMENT REPORT]
-
-  🔴 Trạng thái: THẤT BẠI (FAILURE)
-  📌 Dự án: Next.js App
-  🌿 Nhánh: main
-  👤 Tác giả: HieuNguyenddev
+  🌐 Vercel Live URL: https://devops-minhhieu-st-23-a.vercel.app
   🐙 Repository: https://github.com/HieuNguyenddev/devops-minhhieu-ST23A
   ```
 
 ---
 
-### 🔑 Các bước cài đặt với X OAuth 2.0:
+### 🔑 Bước 1: Hướng Dẫn Chi Tiết Lấy `TELEGRAM_BOT_TOKEN` (Qua @BotFather)
 
-1. **Lấy thông số từ X (Twitter) Developer Portal**:
-   - Truy cập [X Developer Portal](https://developer.x.com) ➔ chọn App của bạn ➔ tìm mục **User authentication settings** (OAuth 2.0).
-   - Bật **Direct Messages (Read and Write)**.
-   - Bạn sẽ thu được 2 thông số:
-     - **`X_CLIENT_ID`**: Chuỗi Client ID từ X Developer.
-     - **`X_CLIENT_SECRET`**: Chuỗi Client Secret từ X Developer.
-   - Tra cứu thêm **`X_RECIPIENT_ID`** (ID số tài khoản nhận tin nhắn private tại [tweeterid.com](https://tweeterid.com)).
+1. **Mở ứng dụng Telegram**: Truy cập Telegram trên điện thoại, máy tính (Telegram Desktop) hoặc web ([web.telegram.org](https://web.telegram.org)).
+2. **Tìm kiếm BotFather**:
+   - Ở ô tìm kiếm (Search), nhập chính xác: **`@BotFather`**
+   - Chọn đúng tài khoản **BotFather** có **tích xanh xác thực** (Verified Badge) từ Telegram.
+3. **Khởi động nhắn tin với BotFather**:
+   - Nhấn nút **Start** (hoặc gõ `/start`).
+4. **Tạo Bot mới**:
+   - Gửi lệnh: `/newbot`
+5. **Đặt tên hiển thị cho Bot**:
+   - BotFather sẽ hỏi: *"Alright, a new bot. How are we going to call it? Please choose a name for your bot."*
+   - Bạn nhập tên bất kỳ (Ví dụ: `Minh Hieu DevOps Bot`).
+6. **Đặt tên Username cho Bot**:
+   - BotFather tiếp tục hỏi: *"Good. Now let's choose a username for your bot. It must end in `bot`..."*
+   - Bạn nhập tên Username **duy nhất** bắt buộc kết thúc bằng từ `bot` (Ví dụ: `minhhieu_nextjs_deploy_bot`).
+7. **Lấy Token**:
+   - BotFather sẽ phản hồi tin nhắn chúc mừng kèm thông báo dạng:
+     ```text
+     Done! Congratulations on your new bot.
+     ...
+     Use this token to access the HTTP API:
+     7123456789:AAFxXXXXX_xxxxxxxxxxxxxxxxxxxx
+     ```
+   - Sao chép (Copy) toàn bộ chuỗi ký tự nằm sau câu *"Use this token to access the HTTP API:"*.
+   - ➔ Đây chính là mã **`TELEGRAM_BOT_TOKEN`** của bạn.
 
-2. **Cấu hình Secret môi trường**:
-   - **Trên GitHub Actions** (*Settings ➔ Secrets and variables ➔ Actions*):
-     - Thêm 3 Secrets: `X_CLIENT_ID`, `X_CLIENT_SECRET`, và `X_RECIPIENT_ID`.
-   - **Trên Jenkins** (*Manage Jenkins ➔ Credentials ➔ Add Credentials*):
-     - Thêm 3 Credentials (kiểu *Secret text*) tương ứng với `X_CLIENT_ID`, `X_CLIENT_SECRET`, và `X_RECIPIENT_ID`.
+---
+
+### 🔑 Bước 2: Lấy Chat ID Nhận Tin Nhắn
+
+1. Mở Telegram, tìm kiếm bot **`@userinfobot`** và nhấn **Start**.
+2. Bot sẽ lập tức gửi lại thông tin ID cá nhân của bạn (Ví dụ: `123456789`).
+   👉 Đây chính là **`TELEGRAM_CHAT_ID`**.
+
+---
+
+### ⚙️ Bước 3: Cấu Hình Secrets Vào GitHub / Jenkins
+
+- **Trên GitHub Actions** (*Settings ➔ Secrets and variables ➔ Actions*):
+  - Nhấn **New repository secret**:
+    - Secret 1: `TELEGRAM_BOT_TOKEN` = *(Paste token từ BotFather)*
+    - Secret 2: `TELEGRAM_CHAT_ID` = *(Paste ID từ userinfobot)*
+
+- **Trên Jenkins** (*Manage Jenkins ➔ Credentials ➔ Add Credentials*):
+  - Thêm 2 Credentials (kiểu *Secret text*):
+    - ID: `TELEGRAM_BOT_TOKEN`
+    - ID: `TELEGRAM_CHAT_ID`
 
 ---
 
