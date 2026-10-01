@@ -225,56 +225,47 @@ Tùy vào môi trường cài đặt của bạn, chạy một trong các cách 
 
 ---
 
-## 📩 5. Hướng Dẫn Cấu Hình Gửi Tin Nhắn Riêng (Direct Message) Qua X (Twitter) Khi Deploy Thành Công Hoặc Thất Bại
+## 🤖 5. Hướng Dẫn Cấu Hình X (Twitter) Chatbot Gửi Tin Nhắn Báo Cáo Deploy (Thành Công / Thất Bại)
 
-Cả **GitHub Actions** và **Jenkins** đều đã được cấu hình để gửi tin nhắn riêng (DM) trực tiếp đến tài khoản X (Twitter) của bạn mà **không đăng tweet công khai (không cần push)** khi kết quả Deploy là **Thành công** hoặc **Thất bại**.
+Hệ thống CI/CD (cả **GitHub Actions** và **Jenkins**) đã được cấu hình tích hợp Chatbot X (Twitter) Direct Message để tự động gửi tin nhắn báo cáo chi tiết **TOÀN BỘ THÔNG TIN** đến tài khoản X của bạn ngay sau khi tiến trình Deploy hoàn tất:
 
----
+### 📋 Mẫu báo cáo tin nhắn X (Twitter) gửi về:
+- 🟢 **Khi THÀNH CÔNG**:
+  ```text
+  🚀 [CI/CD DEPLOYMENT REPORT]
 
-### 🔑 A. Các thông số cần chuẩn bị từ X (Twitter)
-
-1. **`X_BEARER_TOKEN`** (Hoặc Access Token v2):
-   - Truy cập trang quản trị [X Developer Portal](https://developer.x.com).
-   - Vào dự án/App của bạn, chọn cấp quyền **Direct Messages (Read and Write)**.
-   - Sinh mã **Bearer Token** hoặc **OAuth 2.0 User Access Token**.
-
-2. **`X_RECIPIENT_ID`** (ID tài khoản người nhận tin nhắn):
-   - Đây là ID số (Numeric User ID) của tài khoản X sẽ nhận tin nhắn private.
-   - Có thể tra cứu ID bằng cách nhập Username X tại trang [https://tweeterid.com](https://tweeterid.com).
-
----
-
-### ⚙️ B. Cấu hình biến Secret môi trường
-
-- **Trên GitHub Actions**:
-  - Vào Repository ➔ **Settings** ➔ **Secrets and variables** ➔ **Actions**.
-  - Thêm 2 Secrets:
-    - `X_BEARER_TOKEN`: Mã Token của X Developer.
-    - `X_RECIPIENT_ID`: ID của người nhận tin nhắn.
-
-- **Trên Jenkins**:
-  - Vào **Manage Jenkins** ➔ **Credentials** ➔ **Add Credentials** (Kind: `Secret text`).
-  - Thêm 2 Credentials có ID tương ứng là `X_BEARER_TOKEN` và `X_RECIPIENT_ID`.
-
----
-
-### 🚀 C. Cơ chế gửi tin nhắn (Direct Message API v2)
-
-- **Khi Deploy THÀNH CÔNG (`success`)**:
-  ```bash
-  curl -X POST "https://api.twitter.com/2/dm_conversations/with/$X_RECIPIENT_ID/messages" \
-    -H "Authorization: Bearer $X_BEARER_TOKEN" \
-    -H "Content-Type: application/json" \
-    -d '{"message": {"text": "🎉 Deploy ứng dụng Next.js lên Vercel THÀNH CÔNG!"}}'
+  🟢 Trạng thái: THÀNH CÔNG (SUCCESS)
+  📌 Dự án: Next.js App
+  🌿 Nhánh: main
+  👤 Tác giả: HieuNguyenddev
+  🌐 Vercel URL: https://devops-minhhieu-st-23-a.vercel.app
+  🐙 Repository: https://github.com/HieuNguyenddev/devops-minhhieu-ST23A
   ```
 
-- **Khi Deploy THẤT BẠI (`failure`)**:
-  ```bash
-  curl -X POST "https://api.twitter.com/2/dm_conversations/with/$X_RECIPIENT_ID/messages" \
-    -H "Authorization: Bearer $X_BEARER_TOKEN" \
-    -H "Content-Type: application/json" \
-    -d '{"message": {"text": "❌ Deploy ứng dụng Next.js lên Vercel THẤT BẠI!"}}'
+- 🔴 **Khi THẤT BẠI**:
+  ```text
+  ❌ [CI/CD DEPLOYMENT REPORT]
+
+  🔴 Trạng thái: THẤT BẠI (FAILURE)
+  📌 Dự án: Next.js App
+  🌿 Nhánh: main
+  👤 Tác giả: HieuNguyenddev
+  🐙 Repository: https://github.com/HieuNguyenddev/devops-minhhieu-ST23A
   ```
+
+---
+
+### 🔑 Các bước cài đặt:
+
+1. **Chuẩn bị 2 thông số từ X (Twitter)**:
+   - **`X_BOT_TOKEN`**: Tạo tại [X Developer Portal](https://developer.x.com) ➔ App Settings ➔ Cấp quyền **Direct Messages (Read and Write)** ➔ Sinh mã **Bearer / Bot Token**.
+   - **`X_RECIPIENT_ID`**: ID số của tài khoản nhận tin nhắn (Tra cứu tại [tweeterid.com](https://tweeterid.com)).
+
+2. **Cấu hình Secret môi trường**:
+   - **Trên GitHub Actions** (*Settings ➔ Secrets and variables ➔ Actions*):
+     - Thêm Secret `X_BOT_TOKEN` và `X_RECIPIENT_ID`.
+   - **Trên Jenkins** (*Manage Jenkins ➔ Credentials ➔ Add Credentials*):
+     - Thêm Credentials `X_BOT_TOKEN` và `X_RECIPIENT_ID` (kiểu *Secret text*).
 
 ---
 

@@ -38,30 +38,32 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
-      # 📩 Gửi tin nhắn riêng (DM) qua X (Twitter) khi Deploy THÀNH CÔNG
-      - name: Send Direct Message on Success via X (Twitter)
+      # 🤖 Chatbot X (Twitter) Direct Message - Báo cáo THÀNH CÔNG toàn bộ thông tin
+      - name: Send X (Twitter) DM Chatbot Report on Success
         if: success()
         env:
-          X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
+          X_BOT_TOKEN: ${{ secrets.X_BOT_TOKEN || secrets.X_BEARER_TOKEN }}
           X_RECIPIENT_ID: ${{ secrets.X_RECIPIENT_ID }}
         run: |
-          if [ -n "$X_BEARER_TOKEN" ] && [ -n "$X_RECIPIENT_ID" ]; then
+          if [ -n "$X_BOT_TOKEN" ] && [ -n "$X_RECIPIENT_ID" ]; then
+            MSG="🚀 [CI/CD DEPLOYMENT REPORT]\n\n🟢 Trạng thái: THÀNH CÔNG (SUCCESS)\n📌 Dự án: Next.js App\n🌿 Nhánh: ${GITHUB_REF_NAME}\n👤 Tác giả: ${GITHUB_ACTOR}\n🌐 Vercel URL: https://devops-minhhieu-st-23-a.vercel.app\n🐙 Repository: https://github.com/${GITHUB_REPOSITORY}"
             curl -X POST "https://api.twitter.com/2/dm_conversations/with/$X_RECIPIENT_ID/messages" \
-              -H "Authorization: Bearer $X_BEARER_TOKEN" \
+              -H "Authorization: Bearer $X_BOT_TOKEN" \
               -H "Content-Type: application/json" \
-              -d '{"message": {"text": "🎉 [GitHub Actions] Deploy dự án Next.js lên Vercel THÀNH CÔNG!"}}'
+              -d "{\"message\": {\"text\": \"$MSG\"}}"
           fi
 
-      # 📩 Gửi tin nhắn riêng (DM) qua X (Twitter) khi Deploy THẤT BẠI
-      - name: Send Direct Message on Failure via X (Twitter)
+      # 🤖 Chatbot X (Twitter) Direct Message - Báo cáo THẤT BẠI toàn bộ thông tin
+      - name: Send X (Twitter) DM Chatbot Report on Failure
         if: failure()
         env:
-          X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
+          X_BOT_TOKEN: ${{ secrets.X_BOT_TOKEN || secrets.X_BEARER_TOKEN }}
           X_RECIPIENT_ID: ${{ secrets.X_RECIPIENT_ID }}
         run: |
-          if [ -n "$X_BEARER_TOKEN" ] && [ -n "$X_RECIPIENT_ID" ]; then
+          if [ -n "$X_BOT_TOKEN" ] && [ -n "$X_RECIPIENT_ID" ]; then
+            MSG="❌ [CI/CD DEPLOYMENT REPORT]\n\n🔴 Trạng thái: THẤT BẠI (FAILURE)\n📌 Dự án: Next.js App\n🌿 Nhánh: ${GITHUB_REF_NAME}\n👤 Tác giả: ${GITHUB_ACTOR}\n🐙 Repository: https://github.com/${GITHUB_REPOSITORY}"
             curl -X POST "https://api.twitter.com/2/dm_conversations/with/$X_RECIPIENT_ID/messages" \
-              -H "Authorization: Bearer $X_BEARER_TOKEN" \
+              -H "Authorization: Bearer $X_BOT_TOKEN" \
               -H "Content-Type: application/json" \
-              -d '{"message": {"text": "❌ [GitHub Actions] Deploy dự án Next.js lên Vercel THẤT BẠI!"}}'
+              -d "{\"message\": {\"text\": \"$MSG\"}}"
           fi

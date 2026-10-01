@@ -11,9 +11,9 @@ pipeline {
         VERCEL_TOKEN = credentials('VERCEL_TOKEN')
         VERCEL_ORG_ID = credentials('VERCEL_ORG_ID')
         VERCEL_PROJECT_ID = credentials('VERCEL_PROJECT_ID')
-        
-        // Token và ID người nhận tin nhắn riêng (DM) qua X (Twitter)
-        X_BEARER_TOKEN = credentials('X_BEARER_TOKEN')
+
+        // Token Bot và ID người nhận tin nhắn riêng (DM) qua X (Twitter)
+        X_BOT_TOKEN = credentials('X_BOT_TOKEN')
         X_RECIPIENT_ID = credentials('X_RECIPIENT_ID')
     }
 
@@ -57,25 +57,29 @@ pipeline {
     post {
         success {
             echo 'Deployment successful!'
-            // 📩 Gửi tin nhắn riêng (DM) qua X (Twitter) khi Deploy THÀNH CÔNG
+            
+            // 🤖 Chatbot X (Twitter) Direct Message - Gửi tin nhắn private bằng Bot Token
             sh '''
-                if [ -n "$X_BEARER_TOKEN" ] && [ -n "$X_RECIPIENT_ID" ]; then
+                if [ -n "$X_BOT_TOKEN" ] && [ -n "$X_RECIPIENT_ID" ]; then
+                    MSG="🚀 [JENKINS CI/CD REPORT]\\n\\n🟢 Trạng thái: THÀNH CÔNG (SUCCESS)\\n📌 Dự án: Next.js App\\n🌿 Nhánh: main\\n🌐 Vercel URL: https://devops-minhhieu-st-23-a.vercel.app\\n🐙 Repository: https://github.com/HieuNguyenddev/devops-minhhieu-ST23A"
                     curl -X POST "https://api.twitter.com/2/dm_conversations/with/$X_RECIPIENT_ID/messages" \
-                        -H "Authorization: Bearer $X_BEARER_TOKEN" \
+                        -H "Authorization: Bearer $X_BOT_TOKEN" \
                         -H "Content-Type: application/json" \
-                        -d '{"message": {"text": "🎉 [Jenkins] Deploy dự án Next.js lên Vercel THÀNH CÔNG!"}}'
+                        -d "{\"message\": {\"text\": \"$MSG\"}}"
                 fi
             '''
         }
         failure {
             echo 'Deployment failed!'
-            // 📩 Gửi tin nhắn riêng (DM) qua X (Twitter) khi Deploy THẤT BẠI
+
+            // 🤖 Chatbot X (Twitter) Direct Message - Gửi tin nhắn private bằng Bot Token
             sh '''
-                if [ -n "$X_BEARER_TOKEN" ] && [ -n "$X_RECIPIENT_ID" ]; then
+                if [ -n "$X_BOT_TOKEN" ] && [ -n "$X_RECIPIENT_ID" ]; then
+                    MSG="❌ [JENKINS CI/CD REPORT]\\n\\n🔴 Trạng thái: THẤT BẠI (FAILURE)\\n📌 Dự án: Next.js App\\n🌿 Nhánh: main\\n🐙 Repository: https://github.com/HieuNguyenddev/devops-minhhieu-ST23A"
                     curl -X POST "https://api.twitter.com/2/dm_conversations/with/$X_RECIPIENT_ID/messages" \
-                        -H "Authorization: Bearer $X_BEARER_TOKEN" \
+                        -H "Authorization: Bearer $X_BOT_TOKEN" \
                         -H "Content-Type: application/json" \
-                        -d '{"message": {"text": "❌ [Jenkins] Deploy dự án Next.js lên Vercel THẤT BẠI!"}}'
+                        -d "{\"message\": {\"text\": \"$MSG\"}}"
                 fi
             '''
         }
