@@ -216,11 +216,29 @@ Tùy vào môi trường cài đặt của bạn, chạy một trong các cách 
 ---
 
 ### 4.4. Cấu Hình GitHub Webhook Đến Jenkins (Tùy chọn)
-Để GitHub thông báo cho Jenkins chạy build ngay khi push code:
+
+**`IP_JENKINS_CỦA_BẠN` là gì?**
+Đó là Địa chỉ IP của máy tính hoặc Máy chủ Server đang khởi chạy phần mềm Jenkins.
+
+#### 💡 Cách lấy Địa chỉ IP / URL để điền vào Payload URL:
+
+- **Trường hợp 1: Chạy Jenkins trên Máy tính cá nhân (MacBook / PC)**
+  - Do GitHub ở trên Cloud không thể truy cập trực tiếp vào `localhost` hay IP nội bộ (`192.168.x.x`) của máy tính bạn, bạn hãy tạo một đường dẫn kết nối Internet bằng công cụ **Ngrok**:
+    ```bash
+    npx ngrok http 8080
+    ```
+  - Ngrok sẽ sinh ra một liên kết Internet (Ví dụ: `https://a1b2-113-161-x-x.ngrok-free.app`).
+  - Điền vào **Payload URL**: `https://a1b2-113-161-x-x.ngrok-free.app/github-webhook/`
+
+- **Trường hợp 2: Chạy Jenkins trên Máy chủ Cloud (VPS / EC2 / DigitalOcean)**
+  - Đó chính là **Public IP** của máy chủ đó.
+  - Điền vào **Payload URL**: `http://<PUBLIC_IP_VPS>:8080/github-webhook/`
+
+#### Các bước thêm Webhook trên GitHub:
 1. Vào GitHub Repo ➔ **Settings** ➔ **Webhooks** ➔ **Add webhook**.
-2. **Payload URL**: `http://<IP_JENKINS_CỦA_BẠN>:8080/github-webhook/`
-3. **Content type**: `application/json`
-4. Select events: `Just the push event`.
+2. **Payload URL**: Nhập địa chỉ thu được ở trên (nhớ có đuôi `/github-webhook/`).
+3. **Content type**: Chọn `application/json`.
+4. Select events: Chọn `Just the push event`.
 5. Nhấn **Add webhook**.
 
 ---
