@@ -255,17 +255,21 @@ Hệ thống CI/CD (cả **GitHub Actions** và **Jenkins**) đã được cấu
 
 ---
 
-### 🔑 Các bước cài đặt:
+### 🔑 Các bước cài đặt với X OAuth 2.0:
 
-1. **Chuẩn bị 2 thông số từ X (Twitter)**:
-   - **`X_BOT_TOKEN`**: Tạo tại [X Developer Portal](https://developer.x.com) ➔ App Settings ➔ Cấp quyền **Direct Messages (Read and Write)** ➔ Sinh mã **Bearer / Bot Token**.
-   - **`X_RECIPIENT_ID`**: ID số của tài khoản nhận tin nhắn (Tra cứu tại [tweeterid.com](https://tweeterid.com)).
+1. **Lấy thông số từ X (Twitter) Developer Portal**:
+   - Truy cập [X Developer Portal](https://developer.x.com) ➔ chọn App của bạn ➔ tìm mục **User authentication settings** (OAuth 2.0).
+   - Bật **Direct Messages (Read and Write)**.
+   - Bạn sẽ thu được 2 thông số:
+     - **`X_CLIENT_ID`**: Chuỗi Client ID từ X Developer.
+     - **`X_CLIENT_SECRET`**: Chuỗi Client Secret từ X Developer.
+   - Tra cứu thêm **`X_RECIPIENT_ID`** (ID số tài khoản nhận tin nhắn private tại [tweeterid.com](https://tweeterid.com)).
 
 2. **Cấu hình Secret môi trường**:
    - **Trên GitHub Actions** (*Settings ➔ Secrets and variables ➔ Actions*):
-     - Thêm Secret `X_BOT_TOKEN` và `X_RECIPIENT_ID`.
+     - Thêm 3 Secrets: `X_CLIENT_ID`, `X_CLIENT_SECRET`, và `X_RECIPIENT_ID`.
    - **Trên Jenkins** (*Manage Jenkins ➔ Credentials ➔ Add Credentials*):
-     - Thêm Credentials `X_BOT_TOKEN` và `X_RECIPIENT_ID` (kiểu *Secret text*).
+     - Thêm 3 Credentials (kiểu *Secret text*) tương ứng với `X_CLIENT_ID`, `X_CLIENT_SECRET`, và `X_RECIPIENT_ID`.
 
 ---
 
