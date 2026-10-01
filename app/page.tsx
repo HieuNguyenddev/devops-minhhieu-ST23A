@@ -21,10 +21,11 @@ export default function Home() {
         <section className="flex flex-col md:flex-row items-center justify-between gap-10 py-10">
           <div className="flex-1 space-y-6">
             <div className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">
-              🎓 Sinh Viên Đại Học Đông Á - K23
+              Sinh Viên Đại Học Đông Á - K23
             </div>
             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white leading-tight">
               Xin chào, tôi là <br />
+              <p>Tôi là sinh viên năm 2 </p>
               <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
                 Nguyễn Minh Hiếu
               </span>
