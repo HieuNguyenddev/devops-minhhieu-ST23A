@@ -40,18 +40,28 @@ jobs:
 
       # 📩 Gửi tin nhắn riêng (DM) qua X (Twitter) khi Deploy THÀNH CÔNG
       - name: Send Direct Message on Success via X (Twitter)
-        if: success() && secrets.X_BEARER_TOKEN != '' && secrets.X_RECIPIENT_ID != ''
+        if: success()
+        env:
+          X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
+          X_RECIPIENT_ID: ${{ secrets.X_RECIPIENT_ID }}
         run: |
-          curl -X POST "https://api.twitter.com/2/dm_conversations/with/${{ secrets.X_RECIPIENT_ID }}/messages" \
-            -H "Authorization: Bearer ${{ secrets.X_BEARER_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{"message": {"text": " [GitHub Actions] Deploy dự án Next.js lên Vercel THÀNH CÔNG!"}}'
+          if [ -n "$X_BEARER_TOKEN" ] && [ -n "$X_RECIPIENT_ID" ]; then
+            curl -X POST "https://api.twitter.com/2/dm_conversations/with/$X_RECIPIENT_ID/messages" \
+              -H "Authorization: Bearer $X_BEARER_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d '{"message": {"text": "🎉 [GitHub Actions] Deploy dự án Next.js lên Vercel THÀNH CÔNG!"}}'
+          fi
 
-      # Gửi tin nhắn riêng (DM) qua X (Twitter) khi Deploy THẤT BẠI
+      # 📩 Gửi tin nhắn riêng (DM) qua X (Twitter) khi Deploy THẤT BẠI
       - name: Send Direct Message on Failure via X (Twitter)
-        if: failure() && secrets.X_BEARER_TOKEN != '' && secrets.X_RECIPIENT_ID != ''
+        if: failure()
+        env:
+          X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
+          X_RECIPIENT_ID: ${{ secrets.X_RECIPIENT_ID }}
         run: |
-          curl -X POST "https://api.twitter.com/2/dm_conversations/with/${{ secrets.X_RECIPIENT_ID }}/messages" \
-            -H "Authorization: Bearer ${{ secrets.X_BEARER_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{"message": {"text": " [GitHub Actions] Deploy dự án Next.js lên Vercel THẤT BẠI!"}}'
+          if [ -n "$X_BEARER_TOKEN" ] && [ -n "$X_RECIPIENT_ID" ]; then
+            curl -X POST "https://api.twitter.com/2/dm_conversations/with/$X_RECIPIENT_ID/messages" \
+              -H "Authorization: Bearer $X_BEARER_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d '{"message": {"text": "❌ [GitHub Actions] Deploy dự án Next.js lên Vercel THẤT BẠI!"}}'
+          fi
