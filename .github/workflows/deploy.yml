@@ -52,19 +52,20 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
-      # 🔔 Gửi thông báo đến Zalo khi deploy thành công
-      - name: Notify Zalo on Success
-        if: success() && secrets.ZALO_WEBHOOK_URL != ''
+      # 📩 Gửi tin nhắn riêng (DM) qua X (Twitter) khi Deploy THÀNH CÔNG
+      - name: Send Direct Message on Success via X (Twitter)
+        if: success() && secrets.X_BEARER_TOKEN != '' && secrets.X_RECIPIENT_ID != ''
         run: |
-          curl -X POST "${{ secrets.ZALO_WEBHOOK_URL }}" \
-            -H "Content-Type: application/json" \
-            -d '{"text": "🎉 [GitHub Actions] Deploy ứng dụng Next.js lên Vercel THÀNH CÔNG!"}'
-
-      # 🔔 Gửi thông báo đến X (Twitter) khi deploy thành công
-      - name: Notify X (Twitter) on Success
-        if: success() && secrets.X_BEARER_TOKEN != ''
-        run: |
-          curl -X POST "https://api.twitter.com/2/tweets" \
+          curl -X POST "https://api.twitter.com/2/dm_conversations/with/${{ secrets.X_RECIPIENT_ID }}/messages" \
             -H "Authorization: Bearer ${{ secrets.X_BEARER_TOKEN }}" \
             -H "Content-Type: application/json" \
-            -d '{"text": "🚀 [GitHub Actions] Triển khai thành công dự án Next.js lên Vercel!"}'
+            -d '{"message": {"text": "🎉 [GitHub Actions] Deploy dự án Next.js lên Vercel THÀNH CÔNG!"}}'
+
+      # 📩 Gửi tin nhắn riêng (DM) qua X (Twitter) khi Deploy THẤT BẠI
+      - name: Send Direct Message on Failure via X (Twitter)
+        if: failure() && secrets.X_BEARER_TOKEN != '' && secrets.X_RECIPIENT_ID != ''
+        run: |
+          curl -X POST "https://api.twitter.com/2/dm_conversations/with/${{ secrets.X_RECIPIENT_ID }}/messages" \
+            -H "Authorization: Bearer ${{ secrets.X_BEARER_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"message": {"text": "❌ [GitHub Actions] Deploy dự án Next.js lên Vercel THẤT BẠI!"}}'
