@@ -225,7 +225,70 @@ Tùy vào môi trường cài đặt của bạn, chạy một trong các cách 
 
 ---
 
-## 🧪 5. Kiểm Trả & Vận Hành Quy Trình (Testing)
+## 🔔 5. Hướng Dẫn Cấu Hình Thông Báo Tự Động Đến Zalo / X (Twitter) Khi Deploy Thành Công
+
+Cả **Jenkins** và **GitHub Actions** đều được cấu hình sẵn các bước gửi thông báo HTTP POST khi dự án triển khai thành công.
+
+---
+
+### 💬 A. Cấu Hình Gửi Thông Báo Đến Zalo (Zalo Webhook)
+
+1. **Tạo Zalo OA / Bot Webhook**:
+   - Truy cập trang quản trị [Zalo Official Account (OA)](https://oa.zalo.me/) hoặc dịch vụ Webhook Zalo Bot của nhóm bạn.
+   - Lấy đường dẫn **Webhook URL** (Ví dụ: `https://chat.zalo.me/api/v1/webhook/...` hoặc Endpoint Server nhận tin nhắn của bạn).
+
+2. **Cấu hình biến môi trường `ZALO_WEBHOOK_URL`**:
+   - **Trên GitHub Actions**:
+     - Vào Repository ➔ **Settings** ➔ **Secrets and variables** ➔ **Actions**.
+     - Nhấn **New repository secret**.
+     - Name: `ZALO_WEBHOOK_URL`
+     - Secret: *(Dán đường dẫn Webhook URL của Zalo)*.
+   - **Trên Jenkins**:
+     - Vào **Manage Jenkins** ➔ **Credentials** ➔ **Add Credentials**.
+     - Kind: `Secret text`.
+     - ID: `ZALO_WEBHOOK_URL`.
+     - Secret: *(Dán đường dẫn Webhook URL của Zalo)*.
+
+3. **Cơ chế hoạt động**:
+   - Khi Deploy thành công, hệ thống sẽ thực thi lệnh:
+     ```bash
+     curl -X POST "$ZALO_WEBHOOK_URL" \
+       -H "Content-Type: application/json" \
+       -d '{"text": "🎉 Deploy ứng dụng Next.js lên Vercel THÀNH CÔNG!"}'
+     ```
+
+---
+
+### 🐦 B. Cấu Hình Gửi Thông Báo Tự Động Đăng Bài Lên X (Twitter)
+
+1. **Lấy API Access Token từ X (Twitter Developer)**:
+   - Truy cập [X Developer Portal](https://developer.x.com).
+   - Tạo Project / App và sinh **Bearer Token** hoặc **OAuth 2.0 Access Token** có quyền `write` (đăng tweet).
+
+2. **Cấu hình biến `X_BEARER_TOKEN`**:
+   - **Trên GitHub Actions**:
+     - Vào Repository ➔ **Settings** ➔ **Secrets and variables** ➔ **Actions**.
+     - Nhấn **New repository secret**.
+     - Name: `X_BEARER_TOKEN`
+     - Secret: *(Dán mã Bearer Token của X)*.
+   - **Trên Jenkins**:
+     - Vào **Manage Jenkins** ➔ **Credentials** ➔ **Add Credentials**.
+     - Kind: `Secret text`.
+     - ID: `X_BEARER_TOKEN`.
+     - Secret: *(Dán mã Bearer Token của X)*.
+
+3. **Cơ chế hoạt động**:
+   - Ngay sau khi Vercel Deploy hoàn tất thành công, pipeline sẽ gửi lệnh POST tới Twitter API v2:
+     ```bash
+     curl -X POST "https://api.twitter.com/2/tweets" \
+       -H "Authorization: Bearer $X_BEARER_TOKEN" \
+       -H "Content-Type: application/json" \
+       -d '{"text": "🚀 [CI/CD] Triển khai ứng dụng Next.js lên Vercel thành công!"}'
+     ```
+
+---
+
+## 🧪 6. Kiểm Trả & Vận Hành Quy Trình (Testing)
 
 Mỗi khi bạn hoàn thành một tính năng hoặc sửa lỗi, thực hiện lệnh đẩy code:
 
