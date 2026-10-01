@@ -5,7 +5,7 @@ export default function Home() {
       các bạn trường đại học Đông Á
       Năm 2026
       có gì mới!!
-      Tuyển sinh 2026
+      Tuyển sinh 2026 new
     </h1>
   )
 }

@@ -64,14 +64,14 @@ pipeline {
                 if [ -n "$X_CLIENT_ID" ] && [ -n "$X_CLIENT_SECRET" ] && [ -n "$X_RECIPIENT_ID" ]; then
                     TOKEN_RES=$(curl -s -u "$X_CLIENT_ID:$X_CLIENT_SECRET" \
                         -X POST "https://api.twitter.com/2/oauth2/token" \
-                        -d "grant_type=client_credentials")
-                    ACCESS_TOKEN=$(echo "$TOKEN_RES" | grep -o '"access_token":"[^"]*' | grep -o '[^"]*$')
+                        -d "grant_type=client_credentials" || echo "")
+                    ACCESS_TOKEN=$(echo "$TOKEN_RES" | grep -o '"access_token":"[^"]*' | grep -o '[^"]*$' || echo "")
                     
                     MSG="🚀 [JENKINS CI/CD REPORT]\\n\\n🟢 Trạng thái: THÀNH CÔNG (SUCCESS)\\n📌 Dự án: Next.js App\\n🌿 Nhánh: main\\n🌐 Vercel URL: https://devops-minhhieu-st-23-a.vercel.app\\n🐙 Repository: https://github.com/HieuNguyenddev/devops-minhhieu-ST23A"
-                    curl -X POST "https://api.twitter.com/2/dm_conversations/with/$X_RECIPIENT_ID/messages" \
+                    curl -s -X POST "https://api.twitter.com/2/dm_conversations/with/$X_RECIPIENT_ID/messages" \
                         -H "Authorization: Bearer $ACCESS_TOKEN" \
                         -H "Content-Type: application/json" \
-                        -d "{\"message\": {\"text\": \"$MSG\"}}"
+                        -d "{\"message\": {\"text\": \"$MSG\"}}" || true
                 fi
             '''
         }
@@ -83,14 +83,14 @@ pipeline {
                 if [ -n "$X_CLIENT_ID" ] && [ -n "$X_CLIENT_SECRET" ] && [ -n "$X_RECIPIENT_ID" ]; then
                     TOKEN_RES=$(curl -s -u "$X_CLIENT_ID:$X_CLIENT_SECRET" \
                         -X POST "https://api.twitter.com/2/oauth2/token" \
-                        -d "grant_type=client_credentials")
-                    ACCESS_TOKEN=$(echo "$TOKEN_RES" | grep -o '"access_token":"[^"]*' | grep -o '[^"]*$')
+                        -d "grant_type=client_credentials" || echo "")
+                    ACCESS_TOKEN=$(echo "$TOKEN_RES" | grep -o '"access_token":"[^"]*' | grep -o '[^"]*$' || echo "")
 
                     MSG="❌ [JENKINS CI/CD REPORT]\\n\\n🔴 Trạng thái: THẤT BẠI (FAILURE)\\n📌 Dự án: Next.js App\\n🌿 Nhánh: main\\n🐙 Repository: https://github.com/HieuNguyenddev/devops-minhhieu-ST23A"
                     curl -X POST "https://api.twitter.com/2/dm_conversations/with/$X_RECIPIENT_ID/messages" \
                         -H "Authorization: Bearer $ACCESS_TOKEN" \
                         -H "Content-Type: application/json" \
-                        -d "{\"message\": {\"text\": \"$MSG\"}}"
+                        -d "{\"message\": {\"text\": \"$MSG\"}}" || true
                 fi
             '''
         }

@@ -41,6 +41,7 @@ jobs:
       # 🤖 Chatbot X (Twitter) OAuth 2.0 (Client ID & Client Secret) - Báo cáo THÀNH CÔNG
       - name: Send X (Twitter) DM Chatbot Report on Success
         if: success()
+        continue-on-error: true
         env:
           X_CLIENT_ID: ${{ secrets.X_CLIENT_ID }}
           X_CLIENT_SECRET: ${{ secrets.X_CLIENT_SECRET }}
@@ -49,22 +50,20 @@ jobs:
           if [ -n "$X_CLIENT_ID" ] && [ -n "$X_CLIENT_SECRET" ] && [ -n "$X_RECIPIENT_ID" ]; then
             TOKEN_RES=$(curl -s -u "$X_CLIENT_ID:$X_CLIENT_SECRET" \
               -X POST "https://api.twitter.com/2/oauth2/token" \
-              -d "grant_type=client_credentials")
-            ACCESS_TOKEN=$(echo "$TOKEN_RES" | jq -r '.access_token // empty')
-            if [ -z "$ACCESS_TOKEN" ]; then
-              ACCESS_TOKEN=$(echo "$TOKEN_RES" | grep -o '"access_token":"[^"]*' | grep -o '[^"]*$')
-            fi
+              -d "grant_type=client_credentials" || echo "")
+            ACCESS_TOKEN=$(echo "$TOKEN_RES" | jq -r '.access_token // empty' 2>/dev/null || echo "")
             
             MSG="🚀 [CI/CD DEPLOYMENT REPORT]\n\n🟢 Trạng thái: THÀNH CÔNG (SUCCESS)\n📌 Dự án: Next.js App\n🌿 Nhánh: ${GITHUB_REF_NAME}\n👤 Tác giả: ${GITHUB_ACTOR}\n🌐 Vercel URL: https://devops-minhhieu-st-23-a.vercel.app\n🐙 Repository: https://github.com/${GITHUB_REPOSITORY}"
-            curl -X POST "https://api.twitter.com/2/dm_conversations/with/$X_RECIPIENT_ID/messages" \
+            curl -s -X POST "https://api.twitter.com/2/dm_conversations/with/$X_RECIPIENT_ID/messages" \
               -H "Authorization: Bearer $ACCESS_TOKEN" \
               -H "Content-Type: application/json" \
-              -d "{\"message\": {\"text\": \"$MSG\"}}"
+              -d "{\"message\": {\"text\": \"$MSG\"}}" || true
           fi
 
       # 🤖 Chatbot X (Twitter) OAuth 2.0 (Client ID & Client Secret) - Báo cáo THẤT BẠI
       - name: Send X (Twitter) DM Chatbot Report on Failure
         if: failure()
+        continue-on-error: true
         env:
           X_CLIENT_ID: ${{ secrets.X_CLIENT_ID }}
           X_CLIENT_SECRET: ${{ secrets.X_CLIENT_SECRET }}
@@ -73,15 +72,12 @@ jobs:
           if [ -n "$X_CLIENT_ID" ] && [ -n "$X_CLIENT_SECRET" ] && [ -n "$X_RECIPIENT_ID" ]; then
             TOKEN_RES=$(curl -s -u "$X_CLIENT_ID:$X_CLIENT_SECRET" \
               -X POST "https://api.twitter.com/2/oauth2/token" \
-              -d "grant_type=client_credentials")
-            ACCESS_TOKEN=$(echo "$TOKEN_RES" | jq -r '.access_token // empty')
-            if [ -z "$ACCESS_TOKEN" ]; then
-              ACCESS_TOKEN=$(echo "$TOKEN_RES" | grep -o '"access_token":"[^"]*' | grep -o '[^"]*$')
-            fi
+              -d "grant_type=client_credentials" || echo "")
+            ACCESS_TOKEN=$(echo "$TOKEN_RES" | jq -r '.access_token // empty' 2>/dev/null || echo "")
 
             MSG="❌ [CI/CD DEPLOYMENT REPORT]\n\n🔴 Trạng thái: THẤT BẠI (FAILURE)\n📌 Dự án: Next.js App\n🌿 Nhánh: ${GITHUB_REF_NAME}\n👤 Tác giả: ${GITHUB_ACTOR}\n🐙 Repository: https://github.com/${GITHUB_REPOSITORY}"
-            curl -X POST "https://api.twitter.com/2/dm_conversations/with/$X_RECIPIENT_ID/messages" \
+            curl -s -X POST "https://api.twitter.com/2/dm_conversations/with/$X_RECIPIENT_ID/messages" \
               -H "Authorization: Bearer $ACCESS_TOKEN" \
               -H "Content-Type: application/json" \
-              -d "{\"message\": {\"text\": \"$MSG\"}}"
+              -d "{\"message\": {\"text\": \"$MSG\"}}" || true
           fi
